@@ -1,0 +1,98 @@
+<html>
+
+<head>
+    <title>Les Petits plats</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+        integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="/index.css" rel="stylesheet" />
+</head>
+
+<body>
+    <header>
+        <img src="images/ff2950597c1f7f1fce40bd5b03a3d836.jpg">
+        <div class="content h-100">
+            <h1 class="fs-3 ps-3 pt-4">
+                LES PETITS PLATS
+            </h1>
+            <div class="w-100 h-100 d-flex justify-content-center align-items-center">
+                <div class="w-75">
+                    <div class="text fs-1 m-5 text-center">
+                        CHERCHEZ PARMI PLUS DE 1500 RECETTES DU QUOTIDIEN,SIMPLES ET DÉLICIEUSES
+                    </div>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control p-3"
+                            placeholder="Rechercher une recette, un ingrédient, ..."
+                            aria-label="Rechercher une recette, un ingrédient, ..." aria-describedby="button-addon2"
+                            oninput="search()"><button class="btn btn-outline-secondary" type="button"
+                            id="button-addon2">Button</button></input>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </header>
+    <main>
+        <div class="main-header">
+            <div class="selectSection">
+                <div class="d-flex justify-content-center align-items-center filters">
+                    <div id="ingredientSelect">
+                        <div class="select"><label>Ingrédients</label><i class="fa-solid fa-chevron-down"></div></i>
+                        <div id="ingredientOptions">
+                            <input type="text" class="form-control p-3" aria-label="Ingrédients" id="ingredientInput"
+                                aria-describedby="button-addon2"><button class="btn btn-outline-secondary" type="button"
+                                id="button-addon2">Button</button></input>
+                            <div class="optionSelected"></div>
+                        </div>
+                    </div>
+                    <div id="appareilSelect">
+                        <div class="select"><label>Appareils</label><i class="fa-solid fa-chevron-down"></div></i>
+                        <div id="appareilOptions"><input type="text" class="form-control p-3" aria-label="Appareils"
+                                id="appareilInput" aria-describedby="button-addon2"><button
+                                class="btn btn-outline-secondary" type="button"
+                                id="button-addon2">Button</button></input>
+                            <div class="optionSelected"></div>
+                        </div>
+                    </div>
+                    <div id="ustensilSelect">
+                        <div class="select"><label>Ustensils</label><i class="fa-solid fa-chevron-down"></div></i>
+                        <div id="ustensilOptions"><input type="text" class="form-control p-3" aria-label="Ustensils"
+                                id="ustensilInput" aria-describedby="button-addon2"><button
+                                class="btn btn-outline-secondary" type="button"
+                                id="button-addon2">Button</button></input>
+                            <div class="optionSelected"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="recipeNumbers">
+                recettes
+            </div>
+        </div>
+
+        </div>
+        <div class="optionsSection">
+            <div class="d-flex justify-content-center filters">
+                <div class="ingredientOptions">
+
+                </div>
+                <div class="appareilOptions">
+
+                </div>
+                <div class="ustensilOptions">
+
+                </div>
+            </div>
+        </div>
+        </div>
+
+    </main>
+    <footer>
+
+    </footer>
+    <script src="./index.js"></script>
+</body>
+
+</html>
