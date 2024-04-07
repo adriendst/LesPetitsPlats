@@ -17,21 +17,32 @@ const ustensilsSelect = document.getElementById('ustensilSelect')
 ingredientSelect.children[0].addEventListener('click', showOptions)
 ingredientSelect.children[1].children[0].addEventListener('input', searchOptions)
 appareilSelect.children[0].addEventListener('click', showOptions)
-appareilSelect.children[1].children[0].addEventListener('input', searchOptions)
+appareilSelect.children[1].children[0].children[0].addEventListener('input', searchOptions)
 ustensilsSelect.children[0].addEventListener('click', showOptions)
 ustensilsSelect.children[1].children[0].addEventListener('input', searchOptions)
 
 
 function showOptions(event) {
     if (event.currentTarget.parentElement.children[1].style.display === 'flex') {
-        event.currentTarget.style.borderBottomLeftRadius = null
-        event.currentTarget.style.borderBottomRightRadius = null
+        event.currentTarget.parentElement.style.borderBottomLeftRadius = null
+        event.currentTarget.parentElement.style.borderBottomRightRadius = null
         event.currentTarget.parentElement.children[1].style.display = null
+        event.currentTarget.parentElement.children[0].children[1].style.transform = null
+        if(event.currentTarget.parentElement.id === 'ingredientSelect'){
+            resetIngredientSearch()
+        }
+        else if (event.currentTarget.parentElement.id === 'ustensilSelect'){
+            resetUstensilSearch()
+        }
+        else{
+            resetAppareilSearch()
+        }
     }
     else {
-        event.currentTarget.style.borderBottomLeftRadius = '0px'
-        event.currentTarget.style.borderBottomRightRadius = '0px'
+        event.currentTarget.parentElement.style.borderBottomLeftRadius = '0px'
+        event.currentTarget.parentElement.style.borderBottomRightRadius = '0px'
         event.currentTarget.parentElement.children[1].style.display = 'flex'
+        event.currentTarget.parentElement.children[0].children[1].style.transform = 'rotate(-180deg)'
     }
 }
 
@@ -45,12 +56,12 @@ async function init() {
 function initIngredientSelect(data) {
     const selectIngredient = document.getElementById('ingredientOptions')
 
-    if (selectIngredient.children[3] !== undefined) {
-        selectIngredient.children[3].remove()
+    if (selectIngredient.children[2] !== undefined) {
+        selectIngredient.children[2].remove()
     }
 
     const divIngredient = document.createElement('div')
-    divIngredient.setAttribute('class', 'options')
+    divIngredient.setAttribute('class', 'flex flex-col')
     selectIngredient.append(divIngredient);
 
     ingredients = []
@@ -61,8 +72,9 @@ function initIngredientSelect(data) {
                 ingredients.push(ingredient.ingredient.toLowerCase());
                 if (!selectedIngredients.includes(ingredient.ingredient.toLowerCase())) {
                     const option = document.createElement('span');
+                    option.setAttribute('class', 'w-full pr-3 pl-8 pt-2 pb-2')
                     option.innerHTML = ingredient.ingredient.charAt(0).toUpperCase() + ingredient.ingredient.slice(1);
-                    selectIngredient.children[3].append(option);
+                    selectIngredient.children[2].append(option);
                     option.addEventListener('click', () => select(option))
                 }
             }
@@ -79,12 +91,12 @@ function initIngredientSelect(data) {
 
 function initAppareilSelect(data) {
     const selectAppareil = document.getElementById('appareilOptions')
-    if (selectAppareil.children[3] !== undefined) {
-        selectAppareil.children[3].remove()
+    if (selectAppareil.children[2] !== undefined) {
+        selectAppareil.children[2].remove()
     }
 
     const divAppareil = document.createElement('div')
-    divAppareil.setAttribute('class', 'options')
+    divAppareil.setAttribute('class', 'flex flex-col')
     selectAppareil.append(divAppareil);
 
     appareils = []
@@ -94,8 +106,9 @@ function initAppareilSelect(data) {
             appareils.push(d.appliance.toLowerCase());
             if (!selectedApparails.includes(d.appliance.toLowerCase())) {
                 const option = document.createElement('span');
+                option.setAttribute('class', 'w-full pr-3 pl-8 pt-2 pb-2')
                 option.innerHTML = d.appliance.charAt(0).toUpperCase() + d.appliance.slice(1);
-                selectAppareil.children[3].append(option);
+                selectAppareil.children[2].append(option);
                 option.addEventListener('click', () => select(option))
             }
         }
@@ -109,12 +122,12 @@ function initAppareilSelect(data) {
 
 function initUstensilSelect(data) {
     const ustensilsSelect = document.getElementById('ustensilOptions')
-    if (ustensilsSelect.children[3] !== undefined) {
-        ustensilsSelect.children[3].remove()
+    if (ustensilsSelect.children[2] !== undefined) {
+        ustensilsSelect.children[2].remove()
     }
 
     const divUstensil = document.createElement('div')
-    divUstensil.setAttribute('class', 'options')
+    divUstensil.setAttribute('class', 'flex flex-col')
     ustensilsSelect.append(divUstensil);
     ustensils = []
     data.map(d => {
@@ -123,8 +136,9 @@ function initUstensilSelect(data) {
                 ustensils.push(ustensil.toLowerCase());
                 if (!selectedUstensils.includes(ustensil.toLowerCase())) {
                     const option = document.createElement('span');
+                    option.setAttribute('class', 'w-full pr-3 pl-8 pt-2 pb-2')
                     option.innerHTML = ustensil.charAt(0).toUpperCase() + ustensil.slice(1);
-                    ustensilsSelect.children[3].append(option);
+                    ustensilsSelect.children[2].append(option);
                     option.addEventListener('click', () => select(option))
                 }
             }
@@ -150,18 +164,71 @@ let ingredientSearch = ''
 let appareilSearch = ''
 let ustensilSearch = ''
 
+function resetIngredientSearch() {
+    ingredientSearch = ''
+    const input = document.getElementById('ingredientInput')
+    input.value = ''
+    input.parentElement.children[1].className === 'fa-solid fa-xmark flex items-center text-gray-400' && input.parentElement.children[1].remove()
+    searchIngredient(ingredientSearch)
+}
+
+function resetAppareilSearch() {
+    appareilSearch = ''
+    const input = document.getElementById('appareilInput')
+    input.value = ''
+    input.parentElement.children[1].className === 'fa-solid fa-xmark flex items-center text-gray-400' && input.parentElement.children[1].remove()
+    searchAppareil(ingredientSearch)
+}
+
+function resetUstensilSearch() {
+    ustensilSearch = ''
+    const input = document.getElementById('ustensilInput')
+    input.value = ''
+    input.parentElement.children[1].className === 'fa-solid fa-xmark flex items-center text-gray-400' && input.parentElement.children[1].remove()
+    searchUstensil(ingredientSearch)
+}
+
 function searchOptions(event) {
-    if (event.target.parentElement.id === 'ingredientOptions') {
+/*     console.log(event.target.parentElement.parentElement)
+ */    if (event.target.parentElement.parentElement.id === 'ingredientOptions') {
+        console.log(event.target.parentElement)
         ingredientSearch = event.target.value
         searchIngredient(ingredientSearch)
+        if (ingredientSearch.length === 1 && event.target.parentElement.children[1].className !== 'fa-solid fa-xmark flex items-center text-gray-400') {
+            const close = document.createElement('i')
+            close.setAttribute('class', 'fa-solid fa-xmark flex items-center text-gray-400')
+            close.addEventListener('click', resetIngredientSearch)
+            event.target.parentElement.insertBefore(close, event.target.parentElement.children[1])
+        }
+        else if (ingredientSearch.length === 0 && event.target.parentElement.children[1].className === 'fa-solid fa-xmark flex items-center text-gray-400') {
+            event.target.parentElement.children[1].remove()
+        }
     }
-    if (event.target.parentElement.id === 'ustensilOptions') {
+    if (event.target.parentElement.parentElement.id === 'ustensilOptions') {
         ustensilSearch = event.target.value
         searchUstensil(ustensilSearch)
+        if (ustensilSearch.length === 1 && event.target.parentElement.children[1].className !== 'fa-solid fa-xmark flex items-center text-gray-400') {
+            const close = document.createElement('i')
+            close.setAttribute('class', 'fa-solid fa-xmark flex items-center text-gray-400')
+            close.addEventListener('click', resetUstensilSearch)
+            event.target.parentElement.insertBefore(close, event.target.parentElement.children[1])
+        }
+        else if (ustensilSearch.length === 0 && event.target.parentElement.children[1].className === 'fa-solid fa-xmark flex items-center text-gray-400') {
+            event.target.parentElement.children[1].remove()
+        }
     }
-    if (event.target.parentElement.id === 'appareilOptions') {
+    if (event.target.parentElement.parentElement.id === 'appareilOptions') {
         appareilSearch = event.target.value
         searchAppareil(appareilSearch)
+        if (appareilSearch.length === 1 && event.target.parentElement.children[1].className !== 'fa-solid fa-xmark flex items-center text-gray-400') {
+            const close = document.createElement('i')
+            close.setAttribute('class', 'fa-solid fa-xmark flex items-center text-gray-400')
+            close.addEventListener('click', resetAppareilSearch)
+            event.target.parentElement.insertBefore(close, event.target.parentElement.children[1])
+        }
+        else if (appareilSearch.length === 0 && event.target.parentElement.children[1].className === 'fa-solid fa-xmark flex items-center text-gray-400') {
+            event.target.parentElement.children[1].remove()
+        }
     }
 }
 
@@ -172,18 +239,19 @@ function searchIngredient(ingredientSearch) {
 
     const selectIngredient = document.getElementById('ingredientOptions')
 
-    if (selectIngredient.children[3] !== undefined) {
-        selectIngredient.children[3].remove()
+    if (selectIngredient.children[2] !== undefined) {
+        selectIngredient.children[2].remove()
     }
 
     const divIngredient = document.createElement('div')
-    divIngredient.setAttribute('class', 'options')
+    divIngredient.setAttribute('class', 'options flex flex-col')
     selectIngredient.append(divIngredient);
 
     searchedIngredient.map(ingredient => {
         const option = document.createElement('span');
+        option.setAttribute('class', 'w-full pr-3 pl-8 pt-2 pb-2')
         option.innerHTML = ingredient.charAt(0).toUpperCase() + ingredient.slice(1);
-        selectIngredient.children[3].append(option);
+        divIngredient.append(option);
         option.addEventListener('click', () => select(option))
     });
 }
@@ -195,18 +263,19 @@ function searchAppareil(appareilSearch) {
 
     const selectAppareil = document.getElementById('appareilOptions')
 
-    if (selectAppareil.children[3] !== undefined) {
-        selectAppareil.children[3].remove()
+    if (selectAppareil.children[2] !== undefined) {
+        selectAppareil.children[2].remove()
     }
 
     const divIngredient = document.createElement('div')
-    divIngredient.setAttribute('class', 'options')
+    divIngredient.setAttribute('class', 'options flex flex-col')
     selectAppareil.append(divIngredient);
 
     searchedAppareil.map(appareil => {
         const option = document.createElement('span');
+        option.setAttribute('class', 'w-full pr-3 pl-8 pt-2 pb-2')
         option.innerHTML = appareil.charAt(0).toUpperCase() + appareil.slice(1);
-        selectAppareil.children[3].append(option);
+        divIngredient.append(option);
         option.addEventListener('click', () => select(option))
     });
 }
@@ -218,18 +287,19 @@ function searchUstensil(ustensilSearch) {
 
     const selectUstensil = document.getElementById('ustensilOptions')
 
-    if (selectUstensil.children[3] !== undefined) {
-        selectUstensil.children[3].remove()
+    if (selectUstensil.children[2] !== undefined) {
+        selectUstensil.children[2].remove()
     }
 
     const divIngredient = document.createElement('div')
-    divIngredient.setAttribute('class', 'options')
+    divIngredient.setAttribute('class', 'options flex flex-col')
     selectUstensil.append(divIngredient);
 
     searchedUstensil.map(ustensil => {
         const option = document.createElement('span');
+        option.setAttribute('class', 'w-full pr-3 pl-8 pt-2 pb-2')
         option.innerHTML = ustensil.charAt(0).toUpperCase() + ustensil.slice(1);
-        selectUstensil.children[3].append(option);
+        divIngredient.append(option);
         option.addEventListener('click', () => select(option))
     });
 }
@@ -243,22 +313,19 @@ function deselectOption(option, event) {
     if (isSelect === true) {
         selectedUstensils = selectedUstensils.filter(selectedUstensil => selectedUstensil.toLowerCase() !== option.toLowerCase())
         options = document.getElementById('ustensilOptions')
-        optionToAdd = document.createElement('span')
     }
     isSelect = appareils.concat(selectedApparails).some(appareil => appareil.toLowerCase() === option.toLowerCase())
     if (isSelect === true) {
         selectedApparails = selectedApparails.filter(selectedApparail => selectedApparail.toLowerCase() !== option.toLowerCase())
         options = document.getElementById('appareilOptions')
-        optionToAdd = document.createElement('span')
     }
     isSelect = ingredients.concat(selectedIngredients).some(ingredient => ingredient.toLowerCase() === option.toLowerCase())
     if (isSelect === true) {
         selectedIngredients = selectedIngredients.filter(selectedIngredient => selectedIngredient.toLowerCase() !== option.toLowerCase())
         options = document.getElementById('ingredientOptions')
-        optionToAdd = document.createElement('span')
     }
 
-   Array.from(options.children[2].children).map(optionSelect => {  optionSelect.innerHTML === option && optionSelect.remove() })
+    Array.from(options.children[1].children).map(optionSelect => { optionSelect.innerHTML === option && optionSelect.remove() })
 
     event.srcElement.parentElement.remove()
 
@@ -267,10 +334,6 @@ function deselectOption(option, event) {
 
 function select(option) {
     const parentElement = option.parentElement.parentElement
-    parentElement.style.display = 'none'
-
-    parentElement.parentElement.children[0].style.borderBottomLeftRadius = null
-    parentElement.parentElement.children[0].style.borderBottomRightRadius = null
 
     let divOptions
 
@@ -279,25 +342,30 @@ function select(option) {
         divOptionsSelected = document.getElementById('ustensilOptions')
         selectedUstensils.push(option.innerHTML.toLowerCase())
         document.getElementById('ustensilInput').value = ''
+        ustensilsSelect.children[1].children[0].children[1].className === 'fa-solid fa-xmark flex items-center text-gray-400' && ustensilsSelect.children[1].children[0].children[1].remove()
     }
     else if (parentElement.id === 'ingredientOptions') {
         divOptions = document.getElementsByClassName('ingredientOptions')[0]
         divOptionsSelected = document.getElementById('ingredientOptions')
         selectedIngredients.push(option.innerHTML.toLowerCase())
         document.getElementById('ingredientInput').value = ''
+        ingredientSelect.children[1].children[0].children[1].className === 'fa-solid fa-xmark flex items-center text-gray-400' && ingredientSelect.children[1].children[0].children[1].remove()
     }
     else if (parentElement.id === 'appareilOptions') {
         divOptions = document.getElementsByClassName('appareilOptions')[0]
         divOptionsSelected = document.getElementById('appareilOptions')
         selectedApparails.push(option.innerHTML.toLowerCase())
         document.getElementById('appareilInput').value = ''
+        appareilSelect.children[1].children[0].children[1].className === 'fa-solid fa-xmark flex items-center text-gray-400' && appareilSelect.children[1].children[0].children[1].remove()
     }
 
     const span = document.createElement('span')
+    span.setAttribute('class', 'w-full bg-yellow-300 h-14 flex items-center rounded-xl mt-2 relative')
     const label = document.createElement('label')
+    label.setAttribute('class', 'pl-4')
     label.innerHTML = option.innerHTML.charAt(0).toUpperCase() + option.innerHTML.slice(1);
     const i = document.createElement('i')
-    i.setAttribute('class', 'fa-solid fa-xmark fa-lg')
+    i.setAttribute('class', 'fa-solid fa-xmark fa-lg float-right absolute right-6')
     i.addEventListener('click', (event) => deselectOption(option.innerHTML, event))
 
     span.append(label)
@@ -306,8 +374,10 @@ function select(option) {
     option.remove()
 
     const span2 = document.createElement('span')
+    span2.setAttribute('class', 'flex w-full pr-3 pl-8 pt-2 pb-2 bg-yellow-300')
     span2.innerHTML = option.innerHTML.charAt(0).toUpperCase() + option.innerHTML.slice(1);
-    divOptionsSelected.children[2].append(span2)
+    console.log(divOptionsSelected)
+    divOptionsSelected.children[1].append(span2)
 
     search()
 }
@@ -405,42 +475,51 @@ function displayData(data) {
     }
 
     const recipes = document.createElement('div')
-    recipes.setAttribute('class', 'recipes')
+    recipes.setAttribute('class', 'flex flex-wrap justify-around recipes')
 
 
     data.map(d => {
         const article = document.createElement('article')
+        article.setAttribute('class', 'w-96 bg-white rounded-3xl flex-50 mb-12 max-w-96')
 
         const img = document.createElement('img')
+        img.setAttribute('class', 'w-full h-64 object-cover rounded-t-3xl')
         img.setAttribute('src', `./images/recette/${d.image}`)
 
         const h2 = document.createElement('h2')
+        h2.setAttribute('class', 'mb-5 text-lg')
         h2.innerHTML = d.name.charAt(0).toUpperCase() + d.name.slice(1);
 
         const h3 = document.createElement('h3')
+        h3.setAttribute('class', 'text-xs text-stone-500 mb-3')
         h3.innerHTML = 'RECETTE'
 
         const description = document.createElement('p')
+        description.setAttribute('class', 'overflow-hidden text-ellipsis text-sm')
         description.innerHTML = d.description.charAt(0).toUpperCase() + d.description.slice(1);
 
         const secondh3 = document.createElement('h3')
+        secondh3.setAttribute('class', 'text-xs text-stone-500 mt-3 mb-3')
         secondh3.innerHTML = 'INGRÉDIENTS'
 
         const section = document.createElement('section')
+        section.setAttribute('class', 'flex flex-wrap')
         d.ingredients.map(ingredient => {
             const div = document.createElement('div')
+            div.setAttribute('class', 'w-1/2 flex flex-col mb-3 text-sm flex-50')
             const p = document.createElement('p')
             p.innerHTML = ingredient.ingredient.charAt(0).toUpperCase() + ingredient.ingredient.slice(1);
             div.append(p)
 
             const span = document.createElement('span')
+            span.setAttribute('class', 'text-stone-500')
             span.innerHTML = `${ingredient.quantity ? ingredient.quantity : ''} ${ingredient.unit ? ingredient.unit : ''}`
             div.append(span)
             section.append(div)
         })
 
         const cardContent = document.createElement('div')
-        cardContent.setAttribute('class', 'card-content')
+        cardContent.setAttribute('class', 'card-content m-5')
 
         cardContent.append(h2)
         cardContent.append(h3)
