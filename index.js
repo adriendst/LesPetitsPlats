@@ -10,16 +10,18 @@ let displayIngredients = []
 let displayAppareils = []
 let displayUstensils = []
 
+let results;
+
 const ingredientSelect = document.getElementById('ingredientSelect')
 const appareilSelect = document.getElementById('appareilSelect')
 const ustensilsSelect = document.getElementById('ustensilSelect')
 
 ingredientSelect.children[0].addEventListener('click', showOptions)
-ingredientSelect.children[1].children[0].addEventListener('input', searchOptions)
+ingredientSelect.children[1].children[0].children[0].addEventListener('input', searchOptions)
 appareilSelect.children[0].addEventListener('click', showOptions)
 appareilSelect.children[1].children[0].children[0].addEventListener('input', searchOptions)
 ustensilsSelect.children[0].addEventListener('click', showOptions)
-ustensilsSelect.children[1].children[0].addEventListener('input', searchOptions)
+ustensilsSelect.children[1].children[0].children[0].addEventListener('input', searchOptions)
 
 
 function showOptions(event) {
@@ -28,14 +30,14 @@ function showOptions(event) {
         event.currentTarget.parentElement.style.borderBottomRightRadius = null
         event.currentTarget.parentElement.children[1].style.display = null
         event.currentTarget.parentElement.children[0].children[1].style.transform = null
-        if(event.currentTarget.parentElement.id === 'ingredientSelect'){
-            resetIngredientSearch()
+        if (event.currentTarget.parentElement.id === 'ingredientSelect') {
+            resetElementSearch(ingredientSearch, 'ingredientInput', displayIngredients, 'ingredientOptions')
         }
-        else if (event.currentTarget.parentElement.id === 'ustensilSelect'){
-            resetUstensilSearch()
+        else if (event.currentTarget.parentElement.id === 'ustensilSelect') {
+            resetElementSearch(ustensilSearch, 'ustensilInput', displayUstensils, 'ustensilOptions')
         }
-        else{
-            resetAppareilSearch()
+        else {
+            resetElementSearch(appareilSearch, 'appareilInput', displayAppareils, 'appareilOptions')
         }
     }
     else {
@@ -53,109 +55,59 @@ async function init() {
     initSelect(results)
 }
 
-function initIngredientSelect(data) {
-    const selectIngredient = document.getElementById('ingredientOptions')
 
-    if (selectIngredient.children[2] !== undefined) {
-        selectIngredient.children[2].remove()
+function initElementSelect(data, optionId, elements, initElement, initElement2, selectedElement) {
+    const selectElement = document.getElementById(optionId)
+    if (selectElement.children[2] !== undefined) {
+        selectElement.children[2].remove()
     }
 
-    const divIngredient = document.createElement('div')
-    divIngredient.setAttribute('class', 'flex flex-col')
-    selectIngredient.append(divIngredient);
+    const div = document.createElement('div')
+    div.setAttribute('class', 'flex flex-col')
+    selectElement.append(div);
 
-    ingredients = []
+    elements = []
 
     data.map(d => {
-        d.ingredients.map(ingredient => {
-            if (!ingredients.includes(ingredient.ingredient.toLowerCase())) {
-                ingredients.push(ingredient.ingredient.toLowerCase());
-                if (!selectedIngredients.includes(ingredient.ingredient.toLowerCase())) {
+        if (Array.isArray(d[initElement])) {
+            d[initElement].map(element => {
+                element = element[initElement2] ? element[initElement2] : element
+                if (!elements.includes(element.toLowerCase())) {
+                    elements.push(element.toLowerCase());
+                    if (!selectedElement.includes(element.toLowerCase())) {
+                        const option = document.createElement('span');
+                        option.setAttribute('class', 'w-full pr-3 pl-8 pt-2 pb-2')
+                        option.innerHTML = element.charAt(0).toUpperCase() + element.slice(1);
+                        selectElement.children[2].append(option);
+                        option.addEventListener('click', () => select(option))
+                    }
+                }
+            });
+        } else {
+            if (!elements.includes(d[initElement].toLowerCase())) {
+                elements.push(d[initElement].toLowerCase());
+                if (!selectedElement.includes(d[initElement].toLowerCase())) {
                     const option = document.createElement('span');
                     option.setAttribute('class', 'w-full pr-3 pl-8 pt-2 pb-2')
-                    option.innerHTML = ingredient.ingredient.charAt(0).toUpperCase() + ingredient.ingredient.slice(1);
-                    selectIngredient.children[2].append(option);
+                    option.innerHTML = d[initElement].charAt(0).toUpperCase() + d[initElement].slice(1);
+                    selectElement.children[2].append(option);
                     option.addEventListener('click', () => select(option))
                 }
-            }
-        });
-
-    })
-
-    displayIngredients = ingredients.filter(ingredient => {
-        return !selectedIngredients.includes(ingredient)
-    })
-
-    return data
-}
-
-function initAppareilSelect(data) {
-    const selectAppareil = document.getElementById('appareilOptions')
-    if (selectAppareil.children[2] !== undefined) {
-        selectAppareil.children[2].remove()
-    }
-
-    const divAppareil = document.createElement('div')
-    divAppareil.setAttribute('class', 'flex flex-col')
-    selectAppareil.append(divAppareil);
-
-    appareils = []
-
-    data.map(d => {
-        if (!appareils.includes(d.appliance.toLowerCase())) {
-            appareils.push(d.appliance.toLowerCase());
-            if (!selectedApparails.includes(d.appliance.toLowerCase())) {
-                const option = document.createElement('span');
-                option.setAttribute('class', 'w-full pr-3 pl-8 pt-2 pb-2')
-                option.innerHTML = d.appliance.charAt(0).toUpperCase() + d.appliance.slice(1);
-                selectAppareil.children[2].append(option);
-                option.addEventListener('click', () => select(option))
             }
         }
     })
 
-    displayAppareils = appareils.filter(appareil => {
-        return !selectedApparails.includes(appareil)
-    })
-    return data
-}
-
-function initUstensilSelect(data) {
-    const ustensilsSelect = document.getElementById('ustensilOptions')
-    if (ustensilsSelect.children[2] !== undefined) {
-        ustensilsSelect.children[2].remove()
-    }
-
-    const divUstensil = document.createElement('div')
-    divUstensil.setAttribute('class', 'flex flex-col')
-    ustensilsSelect.append(divUstensil);
-    ustensils = []
-    data.map(d => {
-        d.ustensils.map(ustensil => {
-            if (!ustensils.includes(ustensil.toLowerCase())) {
-                ustensils.push(ustensil.toLowerCase());
-                if (!selectedUstensils.includes(ustensil.toLowerCase())) {
-                    const option = document.createElement('span');
-                    option.setAttribute('class', 'w-full pr-3 pl-8 pt-2 pb-2')
-                    option.innerHTML = ustensil.charAt(0).toUpperCase() + ustensil.slice(1);
-                    ustensilsSelect.children[2].append(option);
-                    option.addEventListener('click', () => select(option))
-                }
-            }
-        });
+    const displayElements = elements.filter(element => {
+        return !selectedApparails.includes(element)
     })
 
-
-    displayUstensils = ustensils.filter(ustensil => {
-        return !selectedUstensils.includes(ustensil)
-    })
-    return data
+    return displayElements
 }
 
 function initSelect(data) {
-    data = initAppareilSelect(data)
-    data = initIngredientSelect(data)
-    data = initUstensilSelect(data)
+    displayAppareils = initElementSelect(data, 'appareilOptions', appareils, 'appliance', '', selectedApparails)
+    displayIngredients = initElementSelect(data, 'ingredientOptions', ingredients, 'ingredients', 'ingredient', selectedIngredients)
+    displayUstensils = initElementSelect(data, 'ustensilOptions', ustensils, 'ustensils', '', selectedUstensils )
 }
 
 init()
@@ -164,142 +116,61 @@ let ingredientSearch = ''
 let appareilSearch = ''
 let ustensilSearch = ''
 
-function resetIngredientSearch() {
-    ingredientSearch = ''
-    const input = document.getElementById('ingredientInput')
+function resetElementSearch(elementSearch, inputId, displayElements, optionId) {
+    elementSearch = ''
+    const input = document.getElementById(inputId)
     input.value = ''
     input.parentElement.children[1].className === 'fa-solid fa-xmark flex items-center text-gray-400' && input.parentElement.children[1].remove()
-    searchIngredient(ingredientSearch)
+    searchElement(elementSearch, displayElements, optionId)
 }
 
-function resetAppareilSearch() {
-    appareilSearch = ''
-    const input = document.getElementById('appareilInput')
-    input.value = ''
-    input.parentElement.children[1].className === 'fa-solid fa-xmark flex items-center text-gray-400' && input.parentElement.children[1].remove()
-    searchAppareil(ingredientSearch)
-}
-
-function resetUstensilSearch() {
-    ustensilSearch = ''
-    const input = document.getElementById('ustensilInput')
-    input.value = ''
-    input.parentElement.children[1].className === 'fa-solid fa-xmark flex items-center text-gray-400' && input.parentElement.children[1].remove()
-    searchUstensil(ingredientSearch)
+function searchOptionsElement(elementSearch, displayElements, optionId, target, inputId) {
+    elementSearch = target.value
+    searchElement(elementSearch, displayElements, optionId)
+    if (elementSearch.length === 1 && target.parentElement.children[1].className !== 'fa-solid fa-xmark flex items-center text-gray-400') {
+        const close = document.createElement('i')
+        close.setAttribute('class', 'fa-solid fa-xmark flex items-center text-gray-400')
+        close.addEventListener('click', () => resetElementSearch(elementSearch, inputId, displayElements, optionId))
+        target.parentElement.insertBefore(close, target.parentElement.children[1])
+    }
+    else if (elementSearch.length === 0 && target.parentElement.children[1].className === 'fa-solid fa-xmark flex items-center text-gray-400') {
+        target.parentElement.children[1].remove()
+    }
 }
 
 function searchOptions(event) {
-/*     console.log(event.target.parentElement.parentElement)
- */    if (event.target.parentElement.parentElement.id === 'ingredientOptions') {
-        console.log(event.target.parentElement)
-        ingredientSearch = event.target.value
-        searchIngredient(ingredientSearch)
-        if (ingredientSearch.length === 1 && event.target.parentElement.children[1].className !== 'fa-solid fa-xmark flex items-center text-gray-400') {
-            const close = document.createElement('i')
-            close.setAttribute('class', 'fa-solid fa-xmark flex items-center text-gray-400')
-            close.addEventListener('click', resetIngredientSearch)
-            event.target.parentElement.insertBefore(close, event.target.parentElement.children[1])
-        }
-        else if (ingredientSearch.length === 0 && event.target.parentElement.children[1].className === 'fa-solid fa-xmark flex items-center text-gray-400') {
-            event.target.parentElement.children[1].remove()
-        }
+    if (event.target.parentElement.parentElement.id === 'ingredientOptions') {
+        searchOptionsElement(ingredientSearch, displayIngredients, 'ingredientOptions', event.target, 'ingredientInput')
     }
     if (event.target.parentElement.parentElement.id === 'ustensilOptions') {
-        ustensilSearch = event.target.value
-        searchUstensil(ustensilSearch)
-        if (ustensilSearch.length === 1 && event.target.parentElement.children[1].className !== 'fa-solid fa-xmark flex items-center text-gray-400') {
-            const close = document.createElement('i')
-            close.setAttribute('class', 'fa-solid fa-xmark flex items-center text-gray-400')
-            close.addEventListener('click', resetUstensilSearch)
-            event.target.parentElement.insertBefore(close, event.target.parentElement.children[1])
-        }
-        else if (ustensilSearch.length === 0 && event.target.parentElement.children[1].className === 'fa-solid fa-xmark flex items-center text-gray-400') {
-            event.target.parentElement.children[1].remove()
-        }
+        searchOptionsElement(ustensilSearch, displayUstensils, 'ustensilOptions', event.target, 'ustensilInput')
     }
     if (event.target.parentElement.parentElement.id === 'appareilOptions') {
-        appareilSearch = event.target.value
-        searchAppareil(appareilSearch)
-        if (appareilSearch.length === 1 && event.target.parentElement.children[1].className !== 'fa-solid fa-xmark flex items-center text-gray-400') {
-            const close = document.createElement('i')
-            close.setAttribute('class', 'fa-solid fa-xmark flex items-center text-gray-400')
-            close.addEventListener('click', resetAppareilSearch)
-            event.target.parentElement.insertBefore(close, event.target.parentElement.children[1])
-        }
-        else if (appareilSearch.length === 0 && event.target.parentElement.children[1].className === 'fa-solid fa-xmark flex items-center text-gray-400') {
-            event.target.parentElement.children[1].remove()
-        }
+        searchOptionsElement(appareilSearch, displayAppareils, 'appareilOptions', event.target, 'appareilInput')
     }
 }
 
-function searchIngredient(ingredientSearch) {
-    const searchedIngredient = displayIngredients.filter(ingredient => {
-        return ingredient.toLowerCase().includes(ingredientSearch.toLowerCase())
+function searchElement(selectSearch, displayElements, optionId) {
+    console.log(displayIngredients)
+    const searchedElements = displayElements.filter(element => {
+        return element.toLowerCase().includes(selectSearch.toLowerCase())
     })
 
-    const selectIngredient = document.getElementById('ingredientOptions')
+    const selectElement = document.getElementById(optionId)
 
-    if (selectIngredient.children[2] !== undefined) {
-        selectIngredient.children[2].remove()
+    if (selectElement.children[2] !== undefined) {
+        selectElement.children[2].remove()
     }
 
-    const divIngredient = document.createElement('div')
-    divIngredient.setAttribute('class', 'options flex flex-col')
-    selectIngredient.append(divIngredient);
+    const div = document.createElement('div')
+    div.setAttribute('class', 'options flex flex-col')
+    selectElement.append(div);
 
-    searchedIngredient.map(ingredient => {
+    searchedElements.map(element => {
         const option = document.createElement('span');
         option.setAttribute('class', 'w-full pr-3 pl-8 pt-2 pb-2')
-        option.innerHTML = ingredient.charAt(0).toUpperCase() + ingredient.slice(1);
-        divIngredient.append(option);
-        option.addEventListener('click', () => select(option))
-    });
-}
-
-function searchAppareil(appareilSearch) {
-    const searchedAppareil = displayAppareils.filter(appareil => {
-        return appareil.toLowerCase().includes(appareilSearch.toLowerCase())
-    })
-
-    const selectAppareil = document.getElementById('appareilOptions')
-
-    if (selectAppareil.children[2] !== undefined) {
-        selectAppareil.children[2].remove()
-    }
-
-    const divIngredient = document.createElement('div')
-    divIngredient.setAttribute('class', 'options flex flex-col')
-    selectAppareil.append(divIngredient);
-
-    searchedAppareil.map(appareil => {
-        const option = document.createElement('span');
-        option.setAttribute('class', 'w-full pr-3 pl-8 pt-2 pb-2')
-        option.innerHTML = appareil.charAt(0).toUpperCase() + appareil.slice(1);
-        divIngredient.append(option);
-        option.addEventListener('click', () => select(option))
-    });
-}
-
-function searchUstensil(ustensilSearch) {
-    const searchedUstensil = displayUstensils.filter(ustensil => {
-        return ustensil.toLowerCase().includes(ustensilSearch.toLowerCase())
-    })
-
-    const selectUstensil = document.getElementById('ustensilOptions')
-
-    if (selectUstensil.children[2] !== undefined) {
-        selectUstensil.children[2].remove()
-    }
-
-    const divIngredient = document.createElement('div')
-    divIngredient.setAttribute('class', 'options flex flex-col')
-    selectUstensil.append(divIngredient);
-
-    searchedUstensil.map(ustensil => {
-        const option = document.createElement('span');
-        option.setAttribute('class', 'w-full pr-3 pl-8 pt-2 pb-2')
-        option.innerHTML = ustensil.charAt(0).toUpperCase() + ustensil.slice(1);
-        divIngredient.append(option);
+        option.innerHTML = element.charAt(0).toUpperCase() + element.slice(1);
+        div.append(option);
         option.addEventListener('click', () => select(option))
     });
 }
@@ -307,7 +178,6 @@ function searchUstensil(ustensilSearch) {
 function deselectOption(option, event) {
     let isSelect = false;
     let options;
-    let optionToAdd;
 
     isSelect = ustensils.concat(selectedUstensils).some(ustensil => ustensil.toLowerCase() === option.toLowerCase())
     if (isSelect === true) {
@@ -335,7 +205,8 @@ function deselectOption(option, event) {
 function select(option) {
     const parentElement = option.parentElement.parentElement
 
-    let divOptions
+    let divOptions;
+    let divOptionsSelected;
 
     if (parentElement.id === 'ustensilOptions') {
         divOptions = document.getElementsByClassName('ustensilOptions')[0]
