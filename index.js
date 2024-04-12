@@ -107,7 +107,7 @@ function initElementSelect(data, optionId, elements, initElement, initElement2, 
 function initSelect(data) {
     displayAppareils = initElementSelect(data, 'appareilOptions', appareils, 'appliance', '', selectedApparails)
     displayIngredients = initElementSelect(data, 'ingredientOptions', ingredients, 'ingredients', 'ingredient', selectedIngredients)
-    displayUstensils = initElementSelect(data, 'ustensilOptions', ustensils, 'ustensils', '', selectedUstensils )
+    displayUstensils = initElementSelect(data, 'ustensilOptions', ustensils, 'ustensils', '', selectedUstensils)
 }
 
 init()
@@ -259,12 +259,15 @@ function search() {
     if (search.length > 2 || selectedApparails.length > 0 || selectedIngredients.length > 0 || selectedUstensils.length > 0) {
         let data = results;
         if (search.length > 2) {
-            data = data.filter(recipe => {
+            let remainingData = []
+            data.forEach(recipe => {
                 if (recipe['name'].toLowerCase().includes(search.toLowerCase())) {
-                    return true
+                    remainingData.push(recipe)
+                    return
                 }
                 if (recipe['description'].toLowerCase().includes(search.toLowerCase())) {
-                    return true
+                    remainingData.push(recipe)
+                    return
                 }
                 let isIngredient;
                 recipe['ingredients'].forEach((recipeIngredient) => {
@@ -272,58 +275,58 @@ function search() {
                         isIngredient = true
                     }
                 });
-                if (isIngredient) return true
+                if (isIngredient) {
+                    remainingData.push(recipe)
+                    return
+                }
             })
+            data = remainingData
         }
 
         if (selectedApparails.length > 0) {
-            data = data.filter(recipe => {
+            let remainingData = []
+            data.forEach(recipe => {
                 if (selectedApparails.some(selectedApparail => selectedApparail.toLowerCase() === recipe.appliance.toLowerCase())) {
-                    return true
+                    remainingData.push(recipe)
+                    return 
                 }
             })
+            data = remainingData
         }
         if (selectedIngredients.length > 0) {
-            data = data.filter(recipe => {
-                let isAllIngredient = false;
-                let isIngredients = []
-                selectedIngredients.forEach(selectedIngredient => {
-                    let isIngredient = []
-                    isIngredient.push(recipe.ingredients.filter(ingredient => {
-                        return ingredient.ingredient.toLowerCase() === selectedIngredient.toLowerCase()
-                    })[0])
-                    if (isIngredient[0] !== undefined) isIngredients.push(isIngredient[0])
-
+            let remainingData = []
+            data.forEach(recipe => {
+                let isIngredient = []
+                recipe.ingredients.forEach(ingredient => {
+                    selectedIngredients.forEach(selectedIngredient => {
+                        if(ingredient.ingredient.toLowerCase() === selectedIngredient.toLowerCase()){
+                            isIngredient.push(ingredient.ingredient)
+                        }
+                    })
                 })
-                if (isIngredients.length === selectedIngredients.length) {
-                    isAllIngredient = true
+                if(isIngredient.length === selectedIngredients.length){
+                    remainingData.push(recipe)
                 }
-                else {
-                    isAllIngredient = false
-                }
-                return isAllIngredient
             })
+            data = remainingData
         }
         if (selectedUstensils.length > 0) {
-            data = data.filter(recipe => {
-                let isAllUstensils = false;
+            let remainingData = []
+            
+            data.forEach(recipe => {
                 let isUstensils = []
-                selectedUstensils.forEach(selectedUstensil => {
-                    let isUstensil = []
-                    isUstensil.push(recipe.ustensils.filter(ustensil => {
-                        return ustensil.toLowerCase() === selectedUstensil.toLowerCase()
-                    })[0])
-                    if (isUstensil[0] !== undefined) isUstensils.push(isUstensil[0])
-
+                recipe.ustensils.forEach(ustensil => {
+                    selectedUstensils.forEach(selectedUstensil => {
+                        if(ustensil.toLowerCase() === selectedUstensil.toLowerCase()){
+                            isUstensils.push(ustensil)
+                        }
+                    })
                 })
-                if (isUstensils.length === selectedUstensils.length) {
-                    isAllUstensils = true
+                if(isUstensils.length === selectedUstensils.length){
+                    remainingData.push(recipe)
                 }
-                else {
-                    isAllUstensils = false
-                }
-                return isAllUstensils
             })
+            data = remainingData
         }
         initSelect(data)
         displayData(data)
